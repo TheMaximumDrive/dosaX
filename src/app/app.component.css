@@ -1,0 +1,16 @@
+#side-panel {
+  float: left;
+  width: 20vw;
+}
+
+app-detail-view, app-high-level-view {
+  width: 40vw;
+}
+
+app-detail-view {
+  float: left;
+}
+
+app-high-level-view {
+  float: left;
+}
