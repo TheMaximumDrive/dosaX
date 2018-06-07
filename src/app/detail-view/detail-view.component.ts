@@ -93,7 +93,8 @@ export class DetailViewComponent implements OnInit {
       const end = [coordinates[1][1], coordinates[1][0]];
       if (begin[0] !== end[0] && begin[1] !== end[1]) {
         this.flightArcList.push(L.Polyline.Arc(begin, end, {
-          color: 'rgba(255,255,255,0.1)',
+          color: 'rgba(255,255,255,0.5)',
+          weight: 0.4,
           vertices: 200
         }));
       }
