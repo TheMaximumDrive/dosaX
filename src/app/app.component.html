@@ -1,5 +1,5 @@
 <div id="side-panel">
-
+  <app-selection (requestSelectionChange)='forwardSelectionRequest()'></app-selection>
 </div>
-<app-detail-view></app-detail-view>
+<app-detail-view [selectionEnabled]="selectionEnabled" (finishSelectionChange)='finishSelectionRequest()'></app-detail-view>
 <app-high-level-view></app-high-level-view>

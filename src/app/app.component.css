@@ -6,6 +6,7 @@
 
 #side-panel {
   width: 20vw;
+  padding: 8px;
 }
 
 app-detail-view {

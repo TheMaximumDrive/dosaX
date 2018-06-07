@@ -1,15 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges} from '@angular/core';
 import {JsonService} from '../services/json.service';
 import {AppConstants} from '../../utilities/app_constants';
 import * as L from 'leaflet';
 import * as d3 from 'd3';
+import {SimpleCssSelector} from '@angular/core/src/render3/interfaces';
 
 @Component({
   selector: 'app-detail-view',
   templateUrl: './detail-view.component.html',
   styleUrls: ['./detail-view.component.scss']
 })
-export class DetailViewComponent implements OnInit {
+export class DetailViewComponent implements OnInit, OnChanges {
+
+  @Input() selectionEnabled: boolean;
+  @Output() finishSelectionChange = new EventEmitter();
 
   options = {
     layers: [
@@ -31,6 +35,8 @@ export class DetailViewComponent implements OnInit {
   private map;
   private airportMarkerList: Array<L.Marker>;
   private flightArcList: Array<L.Polyline>;
+  private airportLayerGroup: L.FeatureGroup;
+  private flightArcLayerGroup: L.FeatureGroup;
 
   constructor(private jsonService: JsonService,
               private app_constants: AppConstants) {
@@ -39,14 +45,22 @@ export class DetailViewComponent implements OnInit {
   ngOnInit() {
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('on change', changes.selectionEnabled.currentValue);
+    // this.promptSelection();
+    this.finishSelectionChange.emit();
+  }
+
   onMapReady(map: L.Map) {
-    console.log('Airports: ');
+    /*console.log('Airports: ');
     console.log(this.jsonService.getAirportsGeoJSON());
     console.log('Flights: ');
-    console.log(this.jsonService.getFlightsGeoJSON());
+    console.log(this.jsonService.getFlightsGeoJSON());*/
     this.map = map;
     this.airportMarkerList = new Array<L.Marker>();
     this.flightArcList = new Array<L.Polyline>();
+    this.airportLayerGroup = L.featureGroup();
+    this.flightArcLayerGroup = L.featureGroup();
 
     // L.control.scale().addTo(map);
 
@@ -54,17 +68,20 @@ export class DetailViewComponent implements OnInit {
     airports.forEach((airport) => {
       const latlng = L.latLng(airport.geometry.coordinates[1], airport.geometry.coordinates[0]);
       const marker = L.marker(latlng, {
-      icon: L.icon({
-        iconSize: [ 6, 6 ],
-        iconAnchor: [ 3, 6 ],
-        iconUrl: 'assets/airport.png'
-      })
-    });
+        icon: L.icon({
+          iconSize: [ 4, 4 ],
+          iconAnchor: [ 2, 4 ],
+          iconUrl: 'assets/airport.png'
+        })
+      });
       this.airportMarkerList.push(marker);
+      this.airportLayerGroup.addLayer(marker);
     });
-    this.airportMarkerList.forEach((airportMarker) => {
+    /*this.airportMarkerList.forEach((airportMarker) => {
       airportMarker.addTo(map);
-    });
+    });*/
+
+    this.layers.push(this.airportLayerGroup);
 
     /*const path = L.curve(['M', [50.54136296522163, 28.520507812500004],
         'C', [52.214338608258224, 28.564453125000004],
@@ -79,7 +96,7 @@ export class DetailViewComponent implements OnInit {
     let flights = this.jsonService.getFlightsGeoJSON().features;
     let i = 0;
     flights = flights.filter(function(flight) {
-      if (i === 20) {
+      if (i === 50) {
         i = 0;
         return true;
       } else {
@@ -92,17 +109,25 @@ export class DetailViewComponent implements OnInit {
       const begin = [coordinates[0][1], coordinates[0][0]];
       const end = [coordinates[1][1], coordinates[1][0]];
       if (begin[0] !== end[0] && begin[1] !== end[1]) {
-        this.flightArcList.push(L.Polyline.Arc(begin, end, {
+        const arc = L.Polyline.Arc(begin, end, {
           color: 'rgba(255,255,255,0.5)',
           weight: 0.4,
           vertices: 200
-        }));
+        });
+        this.flightArcList.push(arc);
+        this.flightArcLayerGroup.addLayer(arc);
       }
     });
 
-    this.flightArcList.forEach((flightArc) => {
+    this.layers.push(this.flightArcLayerGroup);
+    this.flightArcLayerGroup.bringToFront();
+    /*this.flightArcList.forEach((flightArc) => {
       flightArc.addTo(map);
-    });
+    });*/
 
+  }
+
+  private promptSelection() {
+    this.finishSelectionChange.emit();
   }
 }
