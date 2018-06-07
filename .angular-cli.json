@@ -30,6 +30,8 @@
         "../node_modules/bootstrap/scss/bootstrap.scss"
       ],
       "scripts": [
+        "./utilities/leaflet.curve.js",
+        "./utilities/leaflet-arc.min.js",
         "../node_modules/jquery/dist/jquery.min.js",
         "../node_modules/bootstrap/dist/js/bootstrap.min.js"
       ],

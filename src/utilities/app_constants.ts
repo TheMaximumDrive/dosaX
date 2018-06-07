@@ -8,6 +8,6 @@ export class AppConstants {
   readonly southWest = L.latLng(-80.9, -169.5);
   readonly northEast = L.latLng(85.0, 191.3);
   readonly worldBounds: L.LatLngBounds = L.latLngBounds(this.southWest, this.northEast);
-  readonly LAYER_OSM = 'https://api.mapbox.com/styles/v1/mapbox/light-v9/tiles/256/{z}/{x}/{y}?access_token=' + this.mapboxAccessToken;
+  readonly LAYER_OSM = 'https://api.mapbox.com/styles/v1/mapbox/dark-v9/tiles/256/{z}/{x}/{y}?access_token=' + this.mapboxAccessToken;
 
 }

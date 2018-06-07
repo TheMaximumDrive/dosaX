@@ -1,16 +1,17 @@
-#side-panel {
+#side-panel, app-detail-view, app-high-level-view {
   float: left;
+  height: 100vh;
+  background-color: #191a1a;
+}
+
+#side-panel {
   width: 20vw;
 }
 
-app-detail-view, app-high-level-view {
-  width: 40vw;
-}
-
 app-detail-view {
-  float: left;
+  width: 45vw;
 }
 
 app-high-level-view {
-  float: left;
+  width: 35vw;
 }
