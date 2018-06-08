@@ -1,5 +1,14 @@
-<div id="side-panel">
-  <app-selection [selectionList]="selectionList" (requestSelectionChange)='forwardSelectionRequest()'></app-selection>
-</div>
-<app-detail-view [selectionEnabled]="selectionEnabled" (finishSelectionChange)='finishSelectionRequest($event)'></app-detail-view>
-<app-high-level-view></app-high-level-view>
+<app-selection
+  [selectionList]="selectionList"
+  (requestSelectionDeletionChange)='deleteSelectionRequest($event)'
+  (requestSelectionNameChange)='changeSelectionNameRequest($event)'
+  (requestMapUpdate)='updateMapRequest()'>
+</app-selection>
+<app-detail-view
+  [deleteSelection]="deleteSelection"
+  [updateMapCounter]="updateMapCounter"
+  (finishSelectionChange)='finishSelectionRequest($event)'>
+</app-detail-view>
+<app-high-level-view
+  [selectionList]="selectionList">
+</app-high-level-view>

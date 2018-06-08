@@ -1,3 +1,30 @@
-<button id="new-selection-btn" (click)="createSelectionRequest()">
+<!--<button id="new-selection-btn" (click)="createSelectionRequest()">
   <i class="fa fa-bars"></i> New selection
-</button>
+</button>-->
+<div class="sidepanel-group">
+  <div class="panel">
+    <h5>Selections</h5>
+  </div>
+
+  <ul>
+    <li class="selection-layer" *ngFor="let selection of selectionList">
+      <div class="selection-layer-color" [ngStyle]="{'background-color': selection.getColor()}"></div>
+      <div>{{selection.getName()}}</div>
+      <button (click)="changeSelectionName(selection)"><i class="fa fa-edit"></i></button>
+      <button (click)="deleteSelection(selection)"><i class="fa fa-trash"></i></button>
+    </li>
+  </ul>
+</div>
+<div class="sidepanel-group">
+  <div class="panel">
+    <h5>Filter flights</h5>
+  </div>
+  <ul>
+    <li class="selection-layer">
+      <div class="filter-label">Intermediate stops</div>
+      <!--<nouislider [connect]="true" [min]="0" [max]="15" [(ngModel)]="someRange"></nouislider>-->
+      <mat-checkbox class="stops_checkbox" [(ngModel)]="stopsCheckboxChecked" (change)="onStopsCheckboxStateChanged()"></mat-checkbox>
+    </li>
+    <li class="filter-label"></li>
+  </ul>
+</div>

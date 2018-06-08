@@ -1,12 +1,11 @@
-#side-panel, app-detail-view, app-high-level-view {
+app-selection, app-detail-view, app-high-level-view {
   float: left;
   height: 100vh;
   background-color: #191a1a;
 }
 
-#side-panel {
+app-selection {
   width: 20vw;
-  padding: 8px;
 }
 
 app-detail-view {

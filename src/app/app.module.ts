@@ -14,6 +14,12 @@ import {Selection} from '../utilities/selection';
 import { SelectionComponent } from './selection/selection.component';
 import {AngularFontAwesomeModule} from 'angular-font-awesome';
 import {LeafletDrawModule} from '@asymmetrik/ngx-leaflet-draw';
+import { RenameSelectionDialogComponent } from './rename-selection-dialog/rename-selection-dialog.component';
+import {MatButtonModule, MatCheckboxModule, MatDialogModule, MatInputModule} from '@angular/material';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NouisliderModule} from 'ng2-nouislider';
+import {Ng2GoogleChartsModule} from 'ng2-google-charts';
 
 export function init_app(provider: JsonService) {
   return () => Promise.all([
@@ -27,13 +33,23 @@ export function init_app(provider: JsonService) {
     AppComponent,
     DetailViewComponent,
     HighLevelViewComponent,
-    SelectionComponent
+    SelectionComponent,
+    RenameSelectionDialogComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     LeafletModule.forRoot(),
     LeafletDrawModule.forRoot(),
+    FormsModule,
+    ReactiveFormsModule,
+    BrowserAnimationsModule,
+    MatDialogModule,
+    MatInputModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    Ng2GoogleChartsModule,
+    NouisliderModule,
     AngularFontAwesomeModule
   ],
   providers: [
@@ -42,6 +58,9 @@ export function init_app(provider: JsonService) {
     AppConstants,
     Selection,
     { provide: APP_INITIALIZER, useFactory: init_app, deps: [JsonService] , multi: true }],
+  entryComponents: [
+    RenameSelectionDialogComponent
+  ],
   bootstrap: [
     AppComponent
   ]
