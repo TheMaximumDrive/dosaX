@@ -13,6 +13,7 @@ import {SelectionService} from './services/selection.service';
 import {Selection} from '../utilities/selection';
 import { SelectionComponent } from './selection/selection.component';
 import {AngularFontAwesomeModule} from 'angular-font-awesome';
+import {LeafletDrawModule} from '@asymmetrik/ngx-leaflet-draw';
 
 export function init_app(provider: JsonService) {
   return () => Promise.all([
@@ -32,6 +33,7 @@ export function init_app(provider: JsonService) {
     BrowserModule,
     HttpClientModule,
     LeafletModule.forRoot(),
+    LeafletDrawModule.forRoot(),
     AngularFontAwesomeModule
   ],
   providers: [

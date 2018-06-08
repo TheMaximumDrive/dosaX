@@ -1,5 +1,5 @@
 <div id="side-panel">
-  <app-selection (requestSelectionChange)='forwardSelectionRequest()'></app-selection>
+  <app-selection [selectionList]="selectionList" (requestSelectionChange)='forwardSelectionRequest()'></app-selection>
 </div>
-<app-detail-view [selectionEnabled]="selectionEnabled" (finishSelectionChange)='finishSelectionRequest()'></app-detail-view>
+<app-detail-view [selectionEnabled]="selectionEnabled" (finishSelectionChange)='finishSelectionRequest($event)'></app-detail-view>
 <app-high-level-view></app-high-level-view>

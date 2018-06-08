@@ -7,8 +7,6 @@ interface NodeModule {
 import * as L from 'leaflet';
 declare module 'leaflet' {
 
-  import {LatLngExpression, PolylineOptions} from 'leaflet';
-
   function curve(path, options?: {}): Curve;
 
   interface Curve {
@@ -19,35 +17,17 @@ declare module 'leaflet' {
     function Arc(from, to, option?);
   }
 
-  function polygon(latlngs: LatLngExpression[] | LatLngExpression[][], options?: PathTransformPolylineOptions): Polygon;
-
-  interface PathTransformPolylineOptions extends PolylineOptions {
-    transform?: boolean;
-    draggable?: boolean;
+  namespace Map {
+    namespace selectAreaFeature {
+      function enable(): any;
+      function disable(): any;
+    }
   }
 
-  interface PathTransformOptions {
-    handlerOptions?: L.PathOptions;
-    boundsOptions?: L.PolylineOptions;
-    rotateHandleOptions?: L.PolylineOptions;
-    handleLength?: number;
-    rotation?: boolean;
-    scaling?: boolean;
-    uniformScaling?: boolean;
+  namespace Control {
+    namespace Draw {
+      function setDrawingOptions(options?: any);
+    }
   }
 
-  interface Polygon {
-    transform: PathTransform;
-    dragging: PathDrag;
-  }
-
-  interface PathDrag {
-    enable();
-    disable();
-  }
-
-  interface PathTransform {
-    enable(options?: PathTransformOptions);
-    setOptions(options: PathTransformOptions)
-  }
 }

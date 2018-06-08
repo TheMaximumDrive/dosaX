@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {selection} from 'd3-selection';
+import {Selection} from '../utilities/selection';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +12,7 @@ export class AppComponent {
 
   selectionRequest = false;
   selectionEnabled = false;
+  selectionList: Array<Selection>;
 
   forwardSelectionRequest() {
     this.selectionRequest = true;
@@ -19,8 +21,10 @@ export class AppComponent {
     }
   }
 
-  finishSelectionRequest() {
-    this.selectionRequest = false;
-    // this.selectionEnabled = false;
+  finishSelectionRequest($event) {
+    console.log($event.bounds);
+    console.log($event.color);
+    // const sel = new Selection('Unbenannt', $event.bounds, $event.color);
+    // this.selectionList.push(sel);
   }
 }

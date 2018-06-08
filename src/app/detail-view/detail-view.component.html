@@ -1,6 +1,9 @@
 <div style="height: 100vh;"
      leaflet
+     leafletDraw
      (leafletMapReady)="onMapReady($event)"
+     (leafletDrawReady)="onDrawReady($event)"
      [leafletOptions]="options"
+     [leafletDrawOptions]="drawOptions"
      [leafletLayers]="layers">
 </div>
