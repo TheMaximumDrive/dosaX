@@ -8,9 +8,8 @@ export class Selection {
   layerRef: L.Layer;
   bounds: LatLngBounds;
   color: string;
-  incomingFlights: number;
-  outgoingFlights: number;
-  cyclingFlights: number;
+  numOfOutgoingFlights: number;
+  numOfCyclingFlights: number;
 
   public setName(name) {
     this.name = name;
@@ -44,27 +43,19 @@ export class Selection {
     return this.color;
   }
 
-  public setIncomingFlights(number) {
-    this.incomingFlights = number;
+  public setNumOfOutgoingFlights(number) {
+    this.numOfOutgoingFlights = number;
   }
 
-  public getIncomingFlights() {
-    return this.incomingFlights;
+  public getNumOfOutgoingFlights() {
+    return this.numOfOutgoingFlights;
   }
 
-  public setOutgoingFlights(number) {
-    this.outgoingFlights = number;
+  public setNumOfCyclingFlights(number) {
+    this.numOfCyclingFlights = number;
   }
 
-  public getOutgoingFlights() {
-    return this.outgoingFlights;
-  }
-
-  public setCyclingFlights(number) {
-    this.cyclingFlights = number;
-  }
-
-  public getCyclingFlights() {
-    return this.cyclingFlights;
+  public getNumOfCyclingFlights() {
+    return this.numOfCyclingFlights;
   }
 }

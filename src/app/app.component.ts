@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {ChangeDetectorRef, Component} from '@angular/core';
 import {selection} from 'd3-selection';
 import {Selection} from '../utilities/selection';
 import {SelectionService} from './services/selection.service';
@@ -15,9 +15,11 @@ export class AppComponent {
   selectionList: Array<Selection> = new Array<Selection>();
   deleteSelection: L.Layer;
   updateMapCounter = 0;
+  selectionCounter = 0;
 
   constructor(private jsonService: JsonService,
-              private selectionService: SelectionService) {}
+              private selectionService: SelectionService,
+              private changeDetector: ChangeDetectorRef) {}
 
   deleteSelectionRequest(index: number) {
     if (index !== -1) {
@@ -39,16 +41,14 @@ export class AppComponent {
 
   finishSelectionRequest($event) {
     const _selection = new Selection();
-    _selection.setName('Unbenannt');
+    _selection.setName('Unbenannt' + ((this.selectionCounter++) === 0 ? '' : this.selectionCounter));
     _selection.setLayerRef($event.layerRef);
     _selection.setBounds($event.bounds);
-    _selection.setOutgoingFlights($event.outgoingFlights);
-    _selection.setIncomingFlights($event.incomingFlights);
-    _selection.setCyclingFlights($event.cyclingFlights);
     _selection.setColor($event.color);
     this.selectionList.push(_selection);
     this.selectionList = this.selectionList.slice();
     this.selectionService.updateSelectionList(this.selectionList);
     this.selectionService.updateSankeyData(this.jsonService.getFlightsGeoJSON().features);
+    this.changeDetector.detectChanges();
   }
 }

@@ -100,8 +100,6 @@ export class DetailViewComponent implements OnInit, OnChanges {
     this.airportLayerGroup = L.featureGroup();
     this.flightArcLayerGroup = L.featureGroup();
 
-    // L.control.scale().addTo(map);
-
     /*const airports = this.jsonService.getAirportsGeoJSON().features;
     airports.forEach((airport) => {
       const latlng = L.latLng(airport.geometry.coordinates[1], airport.geometry.coordinates[0]);
@@ -147,124 +145,9 @@ export class DetailViewComponent implements OnInit, OnChanges {
         }
       });
 
-      const selectionList = this.selectionService.getSelectionList();
-
-      const all_flights = this.jsonService.getFlightsGeoJSON().features;
-      let outgoingFlights = 0, incomingFlights = 0, cyclingFlights = 0;
-      const outgoingFlightMapping;
-
-      const outgoingFlightsData = all_flights.filter(function(flight) {
-        const coordinates = flight.geometry.coordinates;
-        const begin = [coordinates[0][1], coordinates[0][0]];
-        const end = [coordinates[1][1], coordinates[1][0]];
-        const selectedBounds = layer.getBounds();
-        const isOutgoing = selectedBounds.contains(begin) && !selectedBounds.contains(end);
-        if (isOutgoing) { outgoingFlights++; }
-        return isOutgoing;
-      })
-
-      const incomingFlightsData = all_flights.filter(function(flight) {
-        const coordinates = flight.geometry.coordinates;
-        const begin = [coordinates[0][1], coordinates[0][0]];
-        const end = [coordinates[1][1], coordinates[1][0]];
-        const selectedBounds = layer.getBounds();
-        const isIncoming = selectedBounds.contains(end) && !selectedBounds.contains(begin);
-        if (isIncoming) { incomingFlights++; }
-        return isIncoming;
-      })
-
-      const cyclingFlightsData = all_flights.filter(function(flight) {
-        const coordinates = flight.geometry.coordinates;
-        const begin = [coordinates[0][1], coordinates[0][0]];
-        const end = [coordinates[1][1], coordinates[1][0]];
-        const selectedBounds = layer.getBounds();
-        const isCycling = selectedBounds.contains(begin) && selectedBounds.contains(end);
-        if (isCycling) { cyclingFlights++; }
-        return isCycling;
-      })
-
-      console.log('outgoingFlightsData: ' + outgoingFlightsData.length);
-
-      const outgoingDstMapping = d3.map();
-      const incomingSrcMapping = d3.map();
-
-      outgoingFlightsData.forEach(function(flight) {
-        const coordinates = flight.geometry.coordinates;
-        const begin = [coordinates[0][1], coordinates[0][0]];
-        const end = [coordinates[1][1], coordinates[1][0]];
-
-        if (selectionList) {
-          let foundSelectionPair = false;
-          selectionList.forEach((selection) => {
-            if (selection.getBounds().contains(end)) {
-              const selectionName = selection.getName();
-              if (outgoingDstMapping.has(selectionName)) {
-                foundSelectionPair = true;
-                outgoingDstMapping.set(selectionName, outgoingDstMapping.get(selectionName) + 1);
-              } else {
-                outgoingDstMapping.set(selectionName, 1);
-              }
-            }
-          });
-          if (!foundSelectionPair) {
-            if (outgoingDstMapping.has('Others')) {
-              outgoingDstMapping.set('Others', outgoingDstMapping.get('Others') + 1);
-            } else {
-              outgoingDstMapping.set('Others', 1);
-            }
-          }
-        } else {
-          if (outgoingDstMapping.has('Others')) {
-            outgoingDstMapping.set('Others', outgoingDstMapping.get('Others') + 1);
-          } else {
-            outgoingDstMapping.set('Others', 1);
-          }
-        }
-      })
-
-      incomingFlightsData.forEach(function(flight) {
-        const coordinates = flight.geometry.coordinates;
-        const begin = [coordinates[0][1], coordinates[0][0]];
-
-        if (selectionList) {
-          let foundSelectionPair = false;
-          selectionList.forEach((selection) => {
-            if (selection.getBounds().contains(begin)) {
-              const selectionName = selection.getName();
-              if (incomingSrcMapping.has(selectionName)) {
-                foundSelectionPair = true;
-                incomingSrcMapping.set(selectionName, incomingSrcMapping.get(selectionName) + 1);
-              } else {
-                incomingSrcMapping.set(selectionName, 1);
-              }
-            }
-          });
-          if (!foundSelectionPair) {
-            if (incomingSrcMapping.has('Others')) {
-              incomingSrcMapping.set('Others', incomingSrcMapping.get('Others') + 1);
-            } else {
-              incomingSrcMapping.set('Others', 1);
-            }
-          }
-        } else {
-          if (incomingSrcMapping.has('Others')) {
-            incomingSrcMapping.set('Others', incomingSrcMapping.get('Others') + 1);
-          } else {
-            incomingSrcMapping.set('Others', 1);
-          }
-        }
-      })
-
-      console.log(outgoingDstMapping);
-      console.log(incomingSrcMapping);
-      console.log('outgoing: ' + outgoingFlights + ', ingoing: ' + incomingFlights + ', cycle: ' + cyclingFlights);
-
       this.finishSelectionChange.emit({
         layerRef: layer,
         bounds: layer.getBounds(),
-        outgoingFlights: outgoingFlights,
-        incomingFlights: incomingFlights,
-        cyclingFlights: cyclingFlights,
         color: this.currentAreaSelectionColor
       });
       this.currentAreaSelectionColor = rndColor;
@@ -307,7 +190,7 @@ export class DetailViewComponent implements OnInit, OnChanges {
       });
     } else {
       flights = flights.filter(() => {
-        if (i === 50) {
+        if (i === 30) {
           i = 0;
           return true;
         } else {
@@ -325,7 +208,7 @@ export class DetailViewComponent implements OnInit, OnChanges {
     const end = [coordinates[1][1], coordinates[1][0]];
     if (begin[0] !== end[0] && begin[1] !== end[1]) {
       const arc = L.Polyline.Arc(begin, end, {
-        color: 'rgba(255,255,255,0.7)',
+        color: 'rgba(220,193,113,0.5)',
         weight: 0.5,
         vertices: 200
       });

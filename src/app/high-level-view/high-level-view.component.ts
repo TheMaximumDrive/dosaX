@@ -1,9 +1,6 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import * as L from 'leaflet';
-import {AppConstants} from '../../utilities/app_constants';
-import {JsonService} from '../services/json.service';
 import {Selection} from '../../utilities/selection';
-import { Chart } from 'chart.js';
+import {SelectionService} from '../services/selection.service';
 
 @Component({
   selector: 'app-high-level-view',
@@ -13,41 +10,112 @@ import { Chart } from 'chart.js';
 export class HighLevelViewComponent implements OnInit, OnChanges {
 
   @Input() selectionList: Array<Selection>;
+  @Input() selectedSelection;
 
-  private chart: Chart;
-  private sankeyDiagramData;
+  public flightsSankey;
+  private outgoingFlightMapData;
+  private outgoingFlightMapColors;
 
-  constructor() { }
+  chartOption = {
+    title : {
+      text: '测试数据',
+      subtext: 'From d3.js',
+      x:'right',
+      y:'bottom'
+    },
+    tooltip : {
+      trigger: 'item',
+      formatter: function (params) {
+        if (params.indicator2) { // is edge
+          return params.value.weight;
+        } else {// is node
+          return params.name;
+        }
+      }
+    },
+    toolbox: {
+      show : true,
+      feature : {
+        restore : {show: true},
+        magicType: {show: true, type: ['force', 'chord']},
+        saveAsImage : {show: true}
+      }
+    },
+    legend: {
+      x: 'left',
+      data: ['group1', 'group2', 'group3', 'group4']
+    },
+    series : [
+      {
+        type: 'chord',
+        sort : 'ascending',
+        sortSub : 'descending',
+        showScale : true,
+        showScaleText : true,
+        data : [
+          {name : 'group1'},
+          {name : 'group2'},
+          {name : 'group3'},
+          {name : 'group4'}
+        ],
+        itemStyle : {
+          normal : {
+            label : {
+              show : false
+            }
+          }
+        },
+        matrix : [
+          [11975,  5871, 8916, 2868],
+          [ 1951, 10048, 2060, 6171],
+          [ 8010, 16145, 8090, 8045],
+          [ 1013,   990,  940, 6907]
+        ]
+      }
+    ]
+  };
+
+
+  constructor(private selectionService: SelectionService) { }
 
   ngOnInit() {
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['selectionList']) {
-      console.log(changes.selectionList.currentValue);
-      this.updateHighLevelMap();
+      const val = changes['selectionList'].currentValue;
+      if (val.length > 0) {
+        this.updateHighLevelMap();
+      }
     }
-
   }
 
   private updateHighLevelMap() {
-    console.log('updateHighLevelMap');
+    this.outgoingFlightMapData = this.selectionService.getOutgoingFlightMapData();
+    this.outgoingFlightMapColors = this.selectionService.getOutgoingFlightMapColors();
+    const incomingFlightMapData = this.selectionService.getIncomingFlightMapData();
+    const incomingFlightMapColors = this.selectionService.getIncomingFlightMapColors();
 
-    this.sankeyDiagramData = {
-      chartType: 'Sankey',
-      dataTable: [
-        ['From', 'To', 'Weight'],
-        [ 'Brazil', 'Portugal', 5 ],
-        [ 'Brazil', 'France', 1 ],
-        [ 'Brazil', 'Spain', 1 ],
-        [ 'Brazil', 'England', 1 ],
-        [ 'Canada', 'Portugal', 1 ],
-        [ 'Canada', 'France', 5 ],
-        [ 'Canada', 'England', 1 ],
-        [ 'Mexico', 'Portugal', 1 ]
-      ],
-      options: {'title': 'Tasks'}
-    };
+    console.log(this.outgoingFlightMapData);
+    // console.log(this.selectionList);
+
+    const selectionNames = Array.from(this.selectionList, selection => selection.getName());
+    selectionNames.push('Others');
+    const chordMatrix = [];
+
+    this.outgoingFlightMapData.forEach((selection) => {
+      const a = Array(this.selectionList.length + 1).fill(0);
+      selection.forEach((outgoingFlights, index) => {
+        const idx = selectionNames.indexOf(outgoingFlights[1]);
+        a[idx] = outgoingFlights[2];
+      });
+      const idx_self = selectionNames.indexOf(selection[0][0]);
+      a[idx_self] = this.selectionList[idx_self].getNumOfCyclingFlights();
+      chordMatrix.push(a);
+    });
+
+    console.log(chordMatrix);
+
   }
 
 }

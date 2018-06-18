@@ -7,7 +7,10 @@ import {JsonService} from './json.service';
 export class SelectionService {
 
   private selectionList: Array<Selection>;
-
+  private outgoingFlightMapDataArray: Array<Array<Array<any>>>;
+  private outgoingFlightMapColors: Array<Array<string>>;
+  private incomingFlightMapDataArray: Array<Array<Array<any>>>;
+  private incomingFlightMapColors: Array<Array<string>>;
   private filterStops: boolean;
 
   constructor(private jsonService: JsonService) {
@@ -30,10 +33,31 @@ export class SelectionService {
     return this.selectionList;
   }
 
+  public getOutgoingFlightMapData() {
+    return this.outgoingFlightMapDataArray;
+  }
+
+  public getOutgoingFlightMapColors() {
+    return this.outgoingFlightMapColors;
+  }
+
+  public getIncomingFlightMapData() {
+    return this.incomingFlightMapDataArray;
+  }
+
+  public getIncomingFlightMapColors() {
+    return this.incomingFlightMapColors;
+  }
+
   public updateSankeyData(flights) {
     if (this.selectionList) {
-      this.selectionList.forEach((selection) => {
-        let outgoingFlights = 0, incomingFlights = 0, cyclingFlights = 0;
+      this.outgoingFlightMapDataArray = new Array<Array<Array<any>>>();
+      this.outgoingFlightMapColors = new Array<Array<string>>();
+      this.incomingFlightMapDataArray = new Array<Array<Array<any>>>();
+      this.incomingFlightMapColors = new Array<Array<string>>();
+
+      this.selectionList.forEach((selection, index) => {
+        let outgoingFlights = 0, cyclingFlights = 0;
 
         const outgoingFlightsData = flights.filter(function(flight) {
           const coordinates = flight.geometry.coordinates;
@@ -43,17 +67,9 @@ export class SelectionService {
           const isOutgoing = selectedBounds.contains(begin) && !selectedBounds.contains(end);
           if (isOutgoing) { outgoingFlights++; }
           return isOutgoing;
-        })
+        });
 
-        const incomingFlightsData = flights.filter(function(flight) {
-          const coordinates = flight.geometry.coordinates;
-          const begin = [coordinates[0][1], coordinates[0][0]];
-          const end = [coordinates[1][1], coordinates[1][0]];
-          const selectedBounds = selection.getBounds();
-          const isIncoming = selectedBounds.contains(end) && !selectedBounds.contains(begin);
-          if (isIncoming) { incomingFlights++; }
-          return isIncoming;
-        })
+        selection.setNumOfOutgoingFlights(outgoingFlights);
 
         const cyclingFlightsData = flights.filter(function(flight) {
           const coordinates = flight.geometry.coordinates;
@@ -63,12 +79,11 @@ export class SelectionService {
           const isCycling = selectedBounds.contains(begin) && selectedBounds.contains(end);
           if (isCycling) { cyclingFlights++; }
           return isCycling;
-        })
+        });
 
-        console.log('outgoingFlightsData: ' + outgoingFlightsData.length);
+        selection.setNumOfCyclingFlights(cyclingFlights);
 
         const outgoingDstMapping = d3.map();
-        const incomingSrcMapping = d3.map();
 
         outgoingFlightsData.forEach((flight) => {
           const coordinates = flight.geometry.coordinates;
@@ -98,32 +113,26 @@ export class SelectionService {
           }
         });
 
-        incomingFlightsData.forEach(function(flight) {
-          const coordinates = flight.geometry.coordinates;
-          const begin = [coordinates[0][1], coordinates[0][0]];
-
-          let foundSelectionPair = false;
-          this.selectionList.forEach((innerSelection) => {
-            if (selection !== innerSelection) {
-              if (innerSelection.getBounds().contains(begin)) {
-                const selectionName = innerSelection.getName();
-                if (incomingSrcMapping.has(selectionName)) {
-                  foundSelectionPair = true;
-                  incomingSrcMapping.set(selectionName, incomingSrcMapping.get(selectionName) + 1);
-                } else {
-                  incomingSrcMapping.set(selectionName, 1);
-                }
-              }
-            }
+        const outgoingFlightMapDataArrayEntry = new Array<Array<any>>();
+        const outgoingFlightMapEntryColors = Array<string>();
+        outgoingFlightMapEntryColors.push(selection.getColor());
+        outgoingDstMapping.entries().forEach((entry) => {
+          outgoingFlightMapDataArrayEntry.push([selection.getName(), entry.key, entry.value]);
+          const s = this.selectionList.filter((d) => {
+            return d.getName() === entry.key;
           });
-          if (!foundSelectionPair) {
-            if (incomingSrcMapping.has('Others')) {
-              incomingSrcMapping.set('Others', incomingSrcMapping.get('Others') + 1);
-            } else {
-              incomingSrcMapping.set('Others', 1);
-            }
+          if (s[0]) {
+            outgoingFlightMapEntryColors.push(s[0].getColor());
+          } else {
+            // Add a color for the other flight sources and destinations
+            outgoingFlightMapEntryColors.push('#fff');
           }
         });
+        this.outgoingFlightMapDataArray.push(outgoingFlightMapDataArrayEntry);
+        this.outgoingFlightMapColors.push(outgoingFlightMapEntryColors);
+
+        // this.outgoingFlightMapColors.push(selection.getColor());
+        // this.incomingFlightMapColors.push(selection.getColor());
       });
     }
   }
