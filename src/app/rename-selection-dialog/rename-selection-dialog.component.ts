@@ -6,13 +6,10 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
   templateUrl: './rename-selection-dialog.component.html',
   styleUrls: ['./rename-selection-dialog.component.scss']
 })
-export class RenameSelectionDialogComponent implements OnInit {
+export class RenameSelectionDialogComponent {
 
   constructor(public dialogRef: MatDialogRef<RenameSelectionDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any) { }
-
-  ngOnInit() {
-  }
 
   onNoClick(): void {
     this.dialogRef.close();

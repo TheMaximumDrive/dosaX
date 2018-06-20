@@ -25,14 +25,19 @@ export class AppComponent {
     if (index !== -1) {
       this.deleteSelection = this.selectionList[index].getLayerRef();
       this.selectionList.splice(index, 1);
+      this.selectionService.updateSelectionList(this.selectionList);
       this.selectionList = this.selectionList.slice();
+      this.selectionService.updateSankeyData(this.jsonService.getFlightsGeoJSON().features);
     }
   }
 
   changeSelectionNameRequest($event) {
-    const index: number = this.selectionList.indexOf($event.selection);
+    /*const index: number = this.selectionList.indexOf($event.selection);
     this.selectionList[index].setName($event.newName);
+    this.selectionService.updateSelectionList(this.selectionList);
     this.selectionList = this.selectionList.slice();
+    this.selectionService.updateSankeyData(this.jsonService.getFlightsGeoJSON().features);*/
+    console.log('changeSelectionNameRequest');
   }
 
   updateMapRequest() {

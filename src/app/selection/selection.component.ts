@@ -32,7 +32,7 @@ export class SelectionComponent implements OnInit, OnChanges {
   public changeSelectionName(selection: Selection) {
     this.tmpSelectionName = selection.getName();
     const dialogRef = this.dialog.open(RenameSelectionDialogComponent, {
-      width: '340px',
+      width: '450px',
       data: { name: this.tmpSelectionName }
     });
 

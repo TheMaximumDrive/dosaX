@@ -1,7 +1,12 @@
 <div>
-  <mat-form-field>
-    <input matInput [(ngModel)]="data.name" placeholder="Selection name">
-  </mat-form-field>
-  <button mat-raised-button [mat-dialog-close]="data.name">Save</button>
+  <!--<div mat-dialog-content>-->
+    <mat-form-field>
+      <input matInput [(ngModel)]="data.name" placeholder={{data.name}}>
+    </mat-form-field>
+  <!--</div>
+  <div mat-dialog-actions>-->
+    <button mat-raised-button [mat-dialog-close]="data.name" cdkFocusInitial>Save</button>
+    <button mat-raised-button (click)="onNoClick()">Cancel</button>
+  <!--</div>-->
 </div>
 

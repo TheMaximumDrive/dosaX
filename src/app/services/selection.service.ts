@@ -11,6 +11,7 @@ export class SelectionService {
   private outgoingFlightMapColors: Array<Array<string>>;
   private incomingFlightMapDataArray: Array<Array<Array<any>>>;
   private incomingFlightMapColors: Array<Array<string>>;
+  private numOfTotalFlights;
   private filterStops: boolean;
 
   constructor(private jsonService: JsonService) {
@@ -49,8 +50,13 @@ export class SelectionService {
     return this.incomingFlightMapColors;
   }
 
+  public getNumOfTotalFlights() {
+    return this.numOfTotalFlights;
+  }
+
   public updateSankeyData(flights) {
     if (this.selectionList) {
+      this.numOfTotalFlights = flights.length;
       this.outgoingFlightMapDataArray = new Array<Array<Array<any>>>();
       this.outgoingFlightMapColors = new Array<Array<string>>();
       this.incomingFlightMapDataArray = new Array<Array<Array<any>>>();

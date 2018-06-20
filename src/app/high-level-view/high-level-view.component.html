@@ -7,6 +7,9 @@
 
 <!--<div echarts [options]="chartOption" class="demo-chart"></div>-->
 
-<echarts-ng2 [option]="chartOption"></echarts-ng2>
-
 <!--<google-chart [data]="incomingFlightsSankey"></google-chart>-->
+
+<div id="chord-wrapper">
+  <svg width="30vw" height="30vw" id="chordChart" (window:resize)="updateHighLevelMap()"></svg>
+</div>
+

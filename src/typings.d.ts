@@ -31,3 +31,5 @@ declare module 'leaflet' {
   }
 
 }
+
+declare var zingchart: any;
