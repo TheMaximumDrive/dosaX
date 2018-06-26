@@ -28,16 +28,17 @@ export class AppComponent {
       this.selectionService.updateSelectionList(this.selectionList);
       this.selectionList = this.selectionList.slice();
       this.selectionService.updateSankeyData(this.jsonService.getFlightsGeoJSON().features);
+      this.changeDetector.detectChanges();
     }
   }
 
   changeSelectionNameRequest($event) {
-    /*const index: number = this.selectionList.indexOf($event.selection);
+    const index: number = this.selectionList.indexOf($event.selection);
     this.selectionList[index].setName($event.newName);
     this.selectionService.updateSelectionList(this.selectionList);
     this.selectionList = this.selectionList.slice();
-    this.selectionService.updateSankeyData(this.jsonService.getFlightsGeoJSON().features);*/
-    console.log('changeSelectionNameRequest');
+    this.selectionService.updateSankeyData(this.jsonService.getFlightsGeoJSON().features);
+    this.changeDetector.detectChanges();
   }
 
   updateMapRequest() {

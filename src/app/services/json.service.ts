@@ -7,6 +7,7 @@ export class JsonService {
 
   private airportsGeoJSON;
   private flightsGeoJSON;
+  private currentDrawnFlightsGeoJSON;
 
   constructor(private http: HttpClient) { }
 
@@ -16,6 +17,14 @@ export class JsonService {
 
   public getFlightsGeoJSON(): any {
     return this.flightsGeoJSON;
+  }
+
+  public setCurrentDrawnFlightsGeoJSON(flights) {
+    this.currentDrawnFlightsGeoJSON = flights;
+  }
+
+  public getCurrentDrawnFlightsGeoJSON() {
+    return this.currentDrawnFlightsGeoJSON;
   }
 
   public loadAirportsGeoJSON(): Promise<any> {

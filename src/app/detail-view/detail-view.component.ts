@@ -116,7 +116,8 @@ export class DetailViewComponent implements OnInit, OnChanges {
     this.layers.push(this.airportLayerGroup);*/
 
     let flights = this.jsonService.getFlightsGeoJSON().features;
-    flights = this.filterFlightsGeoJSON(flights);
+    flights = this.selectRandomFlightSample(flights);
+    this.jsonService.setCurrentDrawnFlightsGeoJSON(flights);
 
     flights.forEach((flight) => {
       this.createArcByFlight(flight);
@@ -162,7 +163,12 @@ export class DetailViewComponent implements OnInit, OnChanges {
   private updateMap() {
     this.cleanFlightsLayer();
 
-    let flights = this.jsonService.getFlightsGeoJSON().features;
+    let flights = this.jsonService.getCurrentDrawnFlightsGeoJSON();
+    if (flights) {
+      flights = flights.features;
+    } else {
+      flights = this.jsonService.getFlightsGeoJSON().features;
+    }
     flights = this.filterFlightsGeoJSON(flights);
 
     flights.forEach((flight) => {
@@ -171,7 +177,14 @@ export class DetailViewComponent implements OnInit, OnChanges {
 
     this.layers.push(this.flightArcLayerGroup);
     this.flightArcLayerGroup.bringToFront();
+  }
 
+  private resetMap() {
+    this.cleanFlightsLayer();
+
+    let flights = this.jsonService.getCurrentDrawnFlightsGeoJSON();
+    flights = this.selectRandomFlightSample(flights);
+    this.jsonService.setCurrentDrawnFlightsGeoJSON(flights);
   }
 
   private cleanFlightsLayer() {
@@ -183,22 +196,25 @@ export class DetailViewComponent implements OnInit, OnChanges {
   }
 
   private filterFlightsGeoJSON(flights) {
-    let i = 0;
     if (this.selectionService.getFilterStops()) {
       flights = flights.filter(function(flight) {
         return flight.properties.stops !== '0';
       });
     } else {
-      flights = flights.filter(() => {
-        if (i === 30) {
-          i = 0;
-          return true;
-        } else {
-          i++;
-          return false;
-        }
-      });
+      return flights;
     }
+  }
+  private selectRandomFlightSample(flights) {
+    let i = 0;
+    flights = flights.filter(() => {
+      if (i === 30) {
+        i = 0;
+        return true;
+      } else {
+        i++;
+        return false;
+      }
+    });
     return flights;
   }
 
@@ -208,7 +224,7 @@ export class DetailViewComponent implements OnInit, OnChanges {
     const end = [coordinates[1][1], coordinates[1][0]];
     if (begin[0] !== end[0] && begin[1] !== end[1]) {
       const arc = L.Polyline.Arc(begin, end, {
-        color: 'rgba(220,193,113,0.5)',
+        color: 'rgba(255,255,255,0.5)', // 'rgba(220,193,113,0.5)',
         weight: 0.5,
         vertices: 200
       });

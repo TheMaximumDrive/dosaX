@@ -42,8 +42,8 @@ export class HighLevelViewComponent implements OnInit, OnChanges, AfterViewInit 
   public updateHighLevelMap() {
     if (this.selectionList.length > 0) {
       this.svg
-        .attr('width', this.el.nativeElement.offsetWidth * 0.8)
-        .attr('height', this.el.nativeElement.offsetHeight * 0.8);
+        .attr('width', this.el.nativeElement.offsetWidth * 0.9)
+        .attr('height', this.el.nativeElement.offsetHeight * 0.9);
 
       this.svg.selectAll('*').remove();
 
@@ -86,7 +86,7 @@ export class HighLevelViewComponent implements OnInit, OnChanges, AfterViewInit 
 
       const width = +this.svg.attr('width'),
         height = +this.svg.attr('height'),
-        innerRadius = Math.min(width, height) * 0.39,
+        innerRadius = Math.min(width, height) * 0.3,
         outerRadius = innerRadius * 1.1;
 
       const chordGenerator = d3.chord()
@@ -114,14 +114,11 @@ export class HighLevelViewComponent implements OnInit, OnChanges, AfterViewInit 
 /////////////// Create the gradient fills //////////////////
 ////////////////////////////////////////////////////////////
 
-      // Function to create the unique id for each chord gradient
-      function getGradID(d) { return 'linkGrad-' + d.source.index + '-' + d.target.index; }
-
       // Create the gradients definitions for each chord
       const grads = this.svg.append('defs').selectAll('linearGradient')
         .data(chord)
         .enter().append('linearGradient')
-          .attr('id', getGradID)
+          .attr('id', this.getGradID)
           .attr('gradientUnits', 'userSpaceOnUse')
           .attr('x1', function(d, i) {
             return innerRadius * Math.cos((d.source.endAngle - d.source.startAngle) / 2 + d.source.startAngle - Math.PI / 2);
@@ -134,17 +131,17 @@ export class HighLevelViewComponent implements OnInit, OnChanges, AfterViewInit 
           })
           .attr('y2', function(d, i) {
             return innerRadius * Math.sin((d.target.endAngle - d.target.startAngle) / 2 + d.target.startAngle - Math.PI / 2);
-          })
+          });
 
       // Set the starting color (at 0%)
       grads.append('stop')
         .attr('offset', '0%')
-        .attr('stop-color', function(d){ return color(d.source.index); });
+        .attr('stop-color', function(d) { return color(d.source.index); });
 
       // Set the ending color (at 100%)
       grads.append('stop')
         .attr('offset', '100%')
-        .attr('stop-color', function(d){ return color(d.target.index); });
+        .attr('stop-color', function(d) { return color(d.target.index); });
 
       const outerArcs = wrapper.append('g')
         .attr('class', 'groups')
@@ -160,14 +157,14 @@ export class HighLevelViewComponent implements OnInit, OnChanges, AfterViewInit 
         .attr('d', arc);
 
       // Append title
-      outerArcs.append('title').text((d) => this.groupTip(d))
+      outerArcs.append('title').text((d) => this.groupTip(d));
 
       // Append labels
       outerArcs.append('text')
         .each((d) => { d.angle = (d.startAngle + d.endAngle) / 2; })
         .attr('dy', '.35em')
         .attr('class', 'titles')
-        .attr('font-size', '1.0em')
+        .attr('font-size', '11px')
         .attr('fill', '#fff')
         .attr('text-anchor', (d) => (d.angle > Math.PI ? 'end' : null))
         .attr('transform', (d) => {
@@ -185,15 +182,19 @@ export class HighLevelViewComponent implements OnInit, OnChanges, AfterViewInit 
           .attr('class', function(d) {
             return 'ribbon ribbon-' + d.source.index + ' chord-' + d.target.index;
           })
-          .style('fill', (d) => ('url(#' + getGradID(d) + ')'))
+          .style('fill', (d) => ('url(#' + this.getGradID(d) + ')'))
           .attr('d', ribbon);
 
       ribbons.append('title').text((d) => this.chordTip(d));
     }
   }
 
+  // Function to create the unique id for each chord gradient
+  private getGradID(d) {
+    return 'linkGrad-' + d.source.index + '-' + d.target.index;
+  }
+
   private fade(opacity) {
-    console.log('');
     return (d, i) => {
       this.svg.selectAll('path.ribbon')
         .filter((j) => (j.source.index !== i && j.target.index !== i))
@@ -202,17 +203,17 @@ export class HighLevelViewComponent implements OnInit, OnChanges, AfterViewInit 
     };
   }
 
-  private chordTip(d){
-    const q = d3.formatPrefix(',.2r', 1e3)
+  private chordTip(d) {
+    const q = d3.formatPrefix(',.2r', 1e3);
     return 'Flow Info:\n'
-      + this.selectionNames[d.source.index] + ' → ' + this.selectionNames[d.target.index] + ': ' + q(d.target.value)
+      + this.selectionNames[d.source.index] + ' → ' + this.selectionNames[d.target.index] + ': ' + d.target.value
       + ((d.source.index === d.target.index) ? '' : ('\n' + this.selectionNames[d.target.index] + ' → '
-        + this.selectionNames[d.source.index] + ': ' + q(d.source.value)));
+        + this.selectionNames[d.source.index] + ': ' + d.source.value));
   }
 
   private groupTip(d) {
-    const q = d3.formatPrefix(',.2r', 1e3)
-    return 'Total number flights related to ' + this.selectionNames[d.index] + ':\n' + q(d.value);
+    const q = d3.formatPrefix(',.2r', 1e3);
+    return 'Total number flights related to ' + this.selectionNames[d.index] + ':\n' + d.value;
   }
 
 }

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, NgZone, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Selection} from '../../utilities/selection';
 import {MatDialog} from '@angular/material';
 import {RenameSelectionDialogComponent} from '../rename-selection-dialog/rename-selection-dialog.component';
@@ -20,7 +20,8 @@ export class SelectionComponent implements OnInit, OnChanges {
   private tmpSelectionName;
 
   constructor(public dialog: MatDialog,
-              private selectionService: SelectionService) { }
+              private selectionService: SelectionService,
+              private zone: NgZone) { }
 
   ngOnInit() {
   }
@@ -31,13 +32,20 @@ export class SelectionComponent implements OnInit, OnChanges {
 
   public changeSelectionName(selection: Selection) {
     this.tmpSelectionName = selection.getName();
-    const dialogRef = this.dialog.open(RenameSelectionDialogComponent, {
-      width: '450px',
-      data: { name: this.tmpSelectionName }
-    });
 
-    dialogRef.afterClosed().subscribe(result => {
-      this.requestSelectionNameChange.emit({selection: selection, newName: result});
+    this.zone.run(() => {
+      const dialogRef = this.dialog.open(RenameSelectionDialogComponent, {
+        width: '450px',
+        data: { name: this.tmpSelectionName }
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          if (result !== this.tmpSelectionName) {
+            this.requestSelectionNameChange.emit({selection: selection, newName: result});
+          }
+        }
+      });
     });
   }
 
