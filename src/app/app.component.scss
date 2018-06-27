@@ -8,6 +8,13 @@ app-selection {
   width: 20vw;
 }
 
+app-selection, app-high-level-view {
+  box-shadow: inset 0px 0px 12px -5px #ABABAB;
+  -webkit-box-shadow: inset 0px 0px 12px -5px #ABABAB;
+  -moz-box-shadow: inset 0px 0px 12px -5px #ABABAB;
+  -o-box-shadow: inset 0px 0px 12px -5px #ABABAB;
+}
+
 app-detail-view {
   width: 45vw;
 }

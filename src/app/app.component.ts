@@ -27,7 +27,13 @@ export class AppComponent {
       this.selectionList.splice(index, 1);
       this.selectionService.updateSelectionList(this.selectionList);
       this.selectionList = this.selectionList.slice();
-      this.selectionService.updateSankeyData(this.jsonService.getFlightsGeoJSON().features);
+      const flights = this.jsonService.getCurrentDrawnFlightsGeoJSON().features;
+      if (!flights) {
+        this.selectionService.updateSankeyData(this.jsonService.getFlightsGeoJSON().features);
+      } else {
+        this.selectionService.updateSankeyData(flights);
+      }
+
       this.changeDetector.detectChanges();
     }
   }
@@ -37,11 +43,36 @@ export class AppComponent {
     this.selectionList[index].setName($event.newName);
     this.selectionService.updateSelectionList(this.selectionList);
     this.selectionList = this.selectionList.slice();
-    this.selectionService.updateSankeyData(this.jsonService.getFlightsGeoJSON().features);
+    let flights = this.jsonService.getCurrentDrawnFlightsGeoJSON().features;
+    if (!flights) {
+      flights = this.jsonService.getFlightsGeoJSON().features;
+      if (this.selectionService.getFilterStops()) {
+        flights = flights.filter(function(flight) {
+          return flight.properties.stops !== '0';
+        });
+      } else {
+        flights = this.selectionService.selectRandomFlightSample(flights);
+      }
+    }
+    this.jsonService.setCurrentDrawnFlightsGeoJSON(flights);
+    this.selectionService.updateSankeyData(flights);
     this.changeDetector.detectChanges();
   }
 
   updateMapRequest() {
+    let flights = this.jsonService.getCurrentDrawnFlightsGeoJSON().features;
+    if (!flights) {
+      flights = this.jsonService.getFlightsGeoJSON().features;
+      if (this.selectionService.getFilterStops()) {
+        flights = flights.filter(function(flight) {
+          return flight.properties.stops !== '0';
+        });
+      } else {
+        flights = this.selectionService.selectRandomFlightSample(flights);
+      }
+    }
+    this.jsonService.setCurrentDrawnFlightsGeoJSON(flights);
+    this.selectionService.updateSankeyData(flights);
     this.updateMapCounter++;
   }
 
@@ -54,7 +85,47 @@ export class AppComponent {
     this.selectionList.push(_selection);
     this.selectionList = this.selectionList.slice();
     this.selectionService.updateSelectionList(this.selectionList);
-    this.selectionService.updateSankeyData(this.jsonService.getFlightsGeoJSON().features);
+    let flights = this.jsonService.getCurrentDrawnFlightsGeoJSON().features;
+    if (!flights) {
+      flights = this.jsonService.getFlightsGeoJSON().features;
+      if (this.selectionService.getFilterStops()) {
+        flights = flights.filter(function(flight) {
+          return flight.properties.stops !== '0';
+        });
+      } else {
+        flights = this.selectionService.selectRandomFlightSample(flights);
+      }
+    }
+    this.jsonService.setCurrentDrawnFlightsGeoJSON(flights);
+    this.selectionService.updateSankeyData(flights);
+    this.changeDetector.detectChanges();
+  }
+
+  updateSelectionRequest($event) {
+    const selectionChanges = $event.selectionChangeList;
+    selectionChanges.forEach((change) => {
+      this.selectionList.forEach((sel, idx) => {
+        if (sel.getColor() === change.getColor()) {
+          this.selectionList[idx].setColor(change.getColor());
+          this.selectionList[idx].setBounds(change.getBounds());
+        }
+      });
+    });
+    this.selectionList = this.selectionList.slice();
+    this.selectionService.updateSelectionList(this.selectionList);
+    let flights = this.jsonService.getCurrentDrawnFlightsGeoJSON().features;
+    if (!flights) {
+      flights = this.jsonService.getFlightsGeoJSON().features;
+      if (this.selectionService.getFilterStops()) {
+        flights = flights.filter(function(flight) {
+          return flight.properties.stops !== '0';
+        });
+      } else {
+        flights = this.selectionService.selectRandomFlightSample(flights);
+      }
+    }
+    this.jsonService.setCurrentDrawnFlightsGeoJSON(flights);
+    this.selectionService.updateSankeyData(flights);
     this.changeDetector.detectChanges();
   }
 }

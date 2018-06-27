@@ -7,8 +7,10 @@
 <app-detail-view
   [deleteSelection]="deleteSelection"
   [updateMapCounter]="updateMapCounter"
-  (finishSelectionChange)='finishSelectionRequest($event)'>
+  (finishSelectionChange)='finishSelectionRequest($event)'
+  (updateSelectionEdits)='updateSelectionRequest($event)'>
 </app-detail-view>
 <app-high-level-view
-  [selectionList]="selectionList">
+  [selectionList]="selectionList"
+  [updateMapCounter]="updateMapCounter">
 </app-high-level-view>

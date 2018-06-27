@@ -16,6 +16,7 @@ export class DetailViewComponent implements OnInit, OnChanges {
   @Input() deleteSelection: Selection;
   @Input() updateMapCounter: number;
   @Output() finishSelectionChange = new EventEmitter();
+  @Output() updateSelectionEdits = new EventEmitter();
 
   private editableLayers = new L.FeatureGroup();
   private currentAreaSelectionColor = '#ffc859';
@@ -116,7 +117,7 @@ export class DetailViewComponent implements OnInit, OnChanges {
     this.layers.push(this.airportLayerGroup);*/
 
     let flights = this.jsonService.getFlightsGeoJSON().features;
-    flights = this.selectRandomFlightSample(flights);
+    flights = this.selectionService.selectRandomFlightSample(flights);
     this.jsonService.setCurrentDrawnFlightsGeoJSON(flights);
 
     flights.forEach((flight) => {
@@ -155,18 +156,25 @@ export class DetailViewComponent implements OnInit, OnChanges {
     });
 
     this.map.on(L.Draw.Event.EDITED, (e) => {
-      const layer = e.layersDiffer;
-      // console.log(layer);
+      const layer = e.layers;
+      const selectionChanges = new Array<Selection>();
+      layer.eachLayer(function (l) {
+        const sel = new Selection();
+        sel.setColor(l.options.color);
+        sel.setBounds(l.getBounds());
+        selectionChanges.push(sel);
+      });
+      this.updateSelectionEdits.emit({
+        selectionChangeList: selectionChanges
+      });
     });
   }
 
   private updateMap() {
     this.cleanFlightsLayer();
 
-    let flights = this.jsonService.getCurrentDrawnFlightsGeoJSON();
-    if (flights) {
-      flights = flights.features;
-    } else {
+    let flights = this.jsonService.getCurrentDrawnFlightsGeoJSON().features;
+    if (!flights) {
       flights = this.jsonService.getFlightsGeoJSON().features;
     }
     flights = this.filterFlightsGeoJSON(flights);
@@ -183,7 +191,7 @@ export class DetailViewComponent implements OnInit, OnChanges {
     this.cleanFlightsLayer();
 
     let flights = this.jsonService.getCurrentDrawnFlightsGeoJSON();
-    flights = this.selectRandomFlightSample(flights);
+    flights = this.selectionService.selectRandomFlightSample(flights);
     this.jsonService.setCurrentDrawnFlightsGeoJSON(flights);
   }
 
@@ -201,20 +209,9 @@ export class DetailViewComponent implements OnInit, OnChanges {
         return flight.properties.stops !== '0';
       });
     } else {
-      return flights;
+      flights = this.selectionService.selectRandomFlightSample(flights);
     }
-  }
-  private selectRandomFlightSample(flights) {
-    let i = 0;
-    flights = flights.filter(() => {
-      if (i === 30) {
-        i = 0;
-        return true;
-      } else {
-        i++;
-        return false;
-      }
-    });
+    this.jsonService.setCurrentDrawnFlightsGeoJSON(flights);
     return flights;
   }
 

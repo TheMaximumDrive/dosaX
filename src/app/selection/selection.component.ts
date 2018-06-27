@@ -41,7 +41,8 @@ export class SelectionComponent implements OnInit, OnChanges {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
-          if (result !== this.tmpSelectionName) {
+          const pattern = /^\d+$/;
+          if ((result !== this.tmpSelectionName) && (!pattern.test(result))) {
             this.requestSelectionNameChange.emit({selection: selection, newName: result});
           }
         }

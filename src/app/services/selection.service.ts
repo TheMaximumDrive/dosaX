@@ -54,6 +54,20 @@ export class SelectionService {
     return this.numOfTotalFlights;
   }
 
+  public selectRandomFlightSample(flights) {
+    let i = 0;
+    flights = flights.filter(() => {
+      if (i === 30) {
+        i = 0;
+        return true;
+      } else {
+        i++;
+        return false;
+      }
+    });
+    return flights;
+  }
+
   public updateSankeyData(flights) {
     if (this.selectionList) {
       this.numOfTotalFlights = flights.length;

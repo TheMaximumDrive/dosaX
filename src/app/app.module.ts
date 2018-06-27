@@ -19,9 +19,6 @@ import {MatButtonModule, MatCheckboxModule, MatDialogModule, MatInputModule} fro
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NouisliderModule} from 'ng2-nouislider';
-import {Ng2GoogleChartsModule} from 'ng2-google-charts';
-import {NgxEchartsModule} from 'ngx-echarts';
-import {EchartsNg2Module} from 'echarts-ng2';
 
 export function init_app(provider: JsonService) {
   return () => Promise.all([
@@ -50,11 +47,8 @@ export function init_app(provider: JsonService) {
     MatInputModule,
     MatButtonModule,
     MatCheckboxModule,
-    Ng2GoogleChartsModule,
     NouisliderModule,
     AngularFontAwesomeModule,
-    NgxEchartsModule,
-    EchartsNg2Module
   ],
   providers: [
     JsonService,

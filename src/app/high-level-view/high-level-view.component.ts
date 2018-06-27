@@ -12,6 +12,7 @@ export class HighLevelViewComponent implements OnInit, OnChanges, AfterViewInit 
 
   @Input() selectionList: Array<Selection>;
   @Input() selectedSelection;
+  @Input() updateMapCounter: number;
 
   private outgoingFlightMapData;
   private outgoingFlightMapColors;
@@ -37,6 +38,9 @@ export class HighLevelViewComponent implements OnInit, OnChanges, AfterViewInit 
         this.updateHighLevelMap();
       }
     }
+    if (changes['updateMapCounter']) {
+      this.updateHighLevelMap();
+    }
   }
 
   public updateHighLevelMap() {
@@ -49,8 +53,6 @@ export class HighLevelViewComponent implements OnInit, OnChanges, AfterViewInit 
 
       this.outgoingFlightMapData = this.selectionService.getOutgoingFlightMapData();
       this.outgoingFlightMapColors = this.selectionService.getOutgoingFlightMapColors();
-      const incomingFlightMapData = this.selectionService.getIncomingFlightMapData();
-      const incomingFlightMapColors = this.selectionService.getIncomingFlightMapColors();
 
       this.selectionNames = Array.from(this.selectionList, selection => selection.getName());
       this.selectionNames.push('Others');
@@ -63,22 +65,24 @@ export class HighLevelViewComponent implements OnInit, OnChanges, AfterViewInit 
       let numOfOtherCyclingFlights = this.selectionService.getNumOfTotalFlights();
 
       this.outgoingFlightMapData.forEach((selection, index) => {
-        const a = Array(this.selectionList.length + 1).fill(0);
-        selection.forEach((outgoingFlights) => {
-          const idx = this.selectionNames.indexOf(outgoingFlights[1]);
-          a[idx] = outgoingFlights[2];
-          numOfOtherCyclingFlights = numOfOtherCyclingFlights - outgoingFlights[2];
-        });
-        const idx_self = this.selectionNames.indexOf(selection[0][0]);
-        if (idx_self >= 0) {
-          a[idx_self] = this.selectionList[idx_self].getNumOfCyclingFlights();
+        if (selection.length > 0) {
+          const a = Array(this.selectionList.length + 1).fill(0);
+          selection.forEach((outgoingFlights) => {
+            const idx = this.selectionNames.indexOf(outgoingFlights[1]);
+            a[idx] = outgoingFlights[2];
+            numOfOtherCyclingFlights = numOfOtherCyclingFlights - outgoingFlights[2];
+          });
+          const idx_self = this.selectionNames.indexOf(selection[0][0]);
+          if (idx_self >= 0) {
+            a[idx_self] = this.selectionList[idx_self].getNumOfCyclingFlights();
+          }
+          numOfOtherCyclingFlights = numOfOtherCyclingFlights - a[idx_self];
+
+          otherFlightsChordArray[index] = selection[0][2];
+          numOfOtherCyclingFlights = numOfOtherCyclingFlights - selection[0][2];
+
+          chordMatrix.push(a);
         }
-        numOfOtherCyclingFlights = numOfOtherCyclingFlights - a[idx_self];
-
-        otherFlightsChordArray[index] = selection[0][2];
-        numOfOtherCyclingFlights = numOfOtherCyclingFlights - selection[0][2];
-
-        chordMatrix.push(a);
       });
 
       otherFlightsChordArray[otherFlightsChordArray.length - 1] = 0; // numOfOtherCyclingFlights
@@ -101,6 +105,7 @@ export class HighLevelViewComponent implements OnInit, OnChanges, AfterViewInit 
 
       const ribbon = d3.ribbon()
         .radius(innerRadius);
+
 
       const color = d3.scaleOrdinal<string, string>()
         .domain(this.selectionNames)
